@@ -37,12 +37,6 @@ def get_data():
     }
     return jsonify(data)
 
-# Define the command to open Edge in InPrivate mode
-command = 'start msedge.exe --inprivate'
-
-# Use the subprocess module to run the command
-subprocess.Popen(command, shell=True)
-
 # Start the Flask application
 if __name__ == '__main__':
     app.run(debug=True)
