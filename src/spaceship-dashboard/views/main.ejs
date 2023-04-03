@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaceship Dashboard</title>
+    <style>
+        .bar-chart {
+            width: 100%;
+            height: 30px;
+            position: relative;
+            background-color: #f3f3f3;
+        }
+
+        .bar-chart .bar {
+            position: absolute;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Spaceship Dashboard</h1>
+
+    <div id="lifeSupportView">
+        <h2>Life Support</h2>
+        <div>
+            <label>Oxygen:</label>
+            <div class="bar-chart" id="oxygenBar"></div>
+        </div>
+        <div>
+            <label>Nitrogen:</label>
+            <div class="bar-chart" id="nitrogenBar"></div>
+        </div>
+        <div>
+            <label>Carbon Dioxide:</label>
+            <div class="bar-chart" id="carbonDioxideBar"></div>
+        </div>
+    </div>
+
+    <div id="propulsionView">
+        <h2>Propulsion</h2>
+        <div>
+            <label>Matter:</label>
+            <div class="bar-chart" id="matterBar"></div>
+        </div>
+        <div>
+            <label>Antimatter:</label>
+            <div class="bar-chart" id="antimatterBar"></div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('updateData', (data) => {
+            const lifeSupport = data.lifeSupport;
+            const propulsion = data.propulsion;
+
+            updateBarChart('oxygenBar', lifeSupport.oxygen);
+            updateBarChart('nitrogenBar', lifeSupport.nitrogen);
+            updateBarChart('carbonDioxideBar', lifeSupport.carbonDioxide);
+            updateBarChart('matterBar', propulsion.matter);
+            updateBarChart('antimatterBar', propulsion.antimatter);
+        });
+
+        function updateBarChart(elementId, percentage) {
+            const barElement = document.getElementById(elementId);
+            barElement.innerHTML = `<div class="bar" style="width:${percentage}%; background-color:blue;"></div>`;
+        }
+    </script>
+</body>
+</html>
