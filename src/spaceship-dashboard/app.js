@@ -1,7 +1,12 @@
 const express = require('express');
 const Sensor = require('./sensor');
 const { createProducer, createConsumer } = require('./kafka');
+const path = require('path');
 const app = express();
+
+
+// Serve static files from the "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
 
@@ -70,3 +75,37 @@ app.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
   await startKafka();
 });
+
+const updateSensors = async () => {
+  try {
+    const response = await fetch('/api/dashboard-data');
+    const data = await response.json();
+    // Update the UI with the received data
+    const oxygenBar = document.getElementById('oxygen-bar');
+    oxygenBar.style.width = `${data.lifeSupport.oxygen}%`;
+    oxygenBar.textContent = `${data.lifeSupport.oxygen}%`;
+
+    const nitrogenBar = document.getElementById('nitrogen-bar');
+    nitrogenBar.style.width = `${data.lifeSupport.nitrogen}%`;
+    nitrogenBar.textContent = `${data.lifeSupport.nitrogen}%`;
+
+    const carbonDioxideBar = document.getElementById('carbon-dioxide-bar');
+    carbonDioxideBar.style.width = `${data.lifeSupport.carbonDioxide}%`;
+    carbonDioxideBar.textContent = `${data.lifeSupport.carbonDioxide}%`;
+
+    const matterBar = document.getElementById('matter-bar');
+    matterBar.style.width = `${data.propulsion.matter}%`;
+    matterBar.textContent = `${data.propulsion.matter}%`;
+
+    const antimatterBar = document.getElementById('antimatter-bar');
+    antimatterBar.style.width = `${data.propulsion.antimatter}%`;
+    antimatterBar.textContent = `${data.propulsion.antimatter}%`;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// Call the updateSensors function periodically to keep the data up-to-date
+setInterval(updateSensors, 1000);
+
+
